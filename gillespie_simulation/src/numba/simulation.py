@@ -1,12 +1,24 @@
 import numpy as np
-from typing import List
+from typing import List,Self
 
 from numba import njit,prange
 from numba_progress import ProgressBar
 
-from benchmarks import benchmark,storage
+from common.benchmarks import benchmark,storage
 
-from functions import calculate_propensity
+from src.base.functions import calculate_propensity
+class Simulation:
+    def __init__(self: Self):
+        return
+
+    def add_reaction(self: Self):
+        pass
+
+    def run(self: Self):
+        pass
+
+    def config(self: Self):
+        pass
 
 @storage
 @benchmark
@@ -25,7 +37,7 @@ def simulate(   state: np.ndarray,\
     u2_vals = np.random.random(size=(cycles, steps))
 
     for cycle in prange(cycles):
-        
+
         for step in range(steps):
         # Calculate updated overall reaction rate
             propensities = np.array(\
@@ -34,17 +46,17 @@ def simulate(   state: np.ndarray,\
                                     reactant_indices[r],\
                                     step,\
                                     rate_constants[r]) \
-                                    
+
                                         for r in range(len(reactions))])
-            
+
             R = np.sum(propensities)
-            
+
         # Calculate time to next reaction
             tau = 1/R * np.log(1/u1_vals[cycle,step])
 
         # Store reaction time
             timestamps[cycle, step+1] = timestamps[cycle,step] + tau
-        
+
         # Select which reaction to occur and update populations
             cumulative_propensities_sum = np.cumsum(propensities)
 

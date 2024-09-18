@@ -23,7 +23,7 @@ def fill_empty_with_last_value(nan_matrix: np.ndarray,row_axis: int = 0) -> np.n
             idx = np.where(~mask,np.arange(mask.shape[row_axis]),0)
             np.maximum.accumulate(idx,axis=row_axis, out=idx)
             nan_matrix[mask] = nan_matrix[fill_empty_helper(mask,idx,len(nan_matrix.shape))]
-            return nan_matrix   
+            return nan_matrix
 
 @njit
 def calculate_propensity(   state_slice:np.ndarray,\
@@ -33,3 +33,7 @@ def calculate_propensity(   state_slice:np.ndarray,\
                                 -> np.floating:
 
     return Rf * np.prod(state_slice[step ,:][specie_indexes])
+
+@benchmark
+def bin_timestamps(timestamps: np.ndarray,average_timestamps: np.ndarray) -> Tuple[np.ndarray,np.ndarray]:
+    return np.digitize(timestamps,average_timestamps),np.histogram(timestamps,average_timestamps)[0]  # !IMPORTANT should i write my own digitize implementation for sorted arrays...

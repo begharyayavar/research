@@ -23,30 +23,58 @@ def plot_trajectories(  species: Dict[str,int],\
                         average_timestamps: np.ndarray,\
                         show_plots: bool = False,\
                         save_plots: bool = False) -> None: # ?WEIRD Funny naming. I'll get to it.
-    
+
     fig, axs = plt.subplots(len(species), 1, figsize=(20,10))
     MAX_X = average_timestamps.max()
     MAX_Y = trajectories.max()
     cycles = trajectories.shape[1]
-    
+
     for specie in species:
         #Title
         axs[species[specie]].set_title(f'Number {specie} Molecules')
-        
+
         # Axis Labels
         axs[species[specie]].set_xlabel("Time")
         axs[species[specie]].set_ylabel("Number of Species")
-        
+
         # Axis Limits
         axs[species[specie]].set_xlim((0,MAX_X))
         axs[species[specie]].set_ylim((0,MAX_Y))
-    
+
         for cycle in range(cycles):
             axs[species[specie]].plot(timestamps[cycle,:], trajectories[species[specie],cycle,:],\
                 marker='', color='grey', linewidth=0.6, alpha=0.3)
-    
+
         axs[species[specie]].plot(average_timestamps, species_average[species[specie]],\
             marker='', color='red', linewidth=1.9, alpha=0.9)
-    if show_plots:    
+    if show_plots:
         plt.show()
-    return 
+    return
+
+def plot_step_averages(species,step_averages,timestamps,average_timestamps):
+    import matplotlib.pyplot as plt
+    fig, axs = plt.subplots(len(species), 1, figsize=(20,10))
+    MAX_X = average_timestamps.max()
+    MAX_Y = trajectories.max()
+    cycles = trajectories.shape[1]
+
+    for specie in species:
+        #Title
+        axs[species[specie]].set_title(f'Number {specie} Molecules')
+
+        # Axis Labels
+        axs[species[specie]].set_xlabel("Time")
+        axs[species[specie]].set_ylabel("Number of Species")
+
+        # Axis Limits
+        axs[species[specie]].set_xlim((0,MAX_X))
+        axs[species[specie]].set_ylim((0,MAX_Y))
+
+        for cycle in range(cycles):
+            axs[species[specie]].plot(timestamps[cycle,:], trajectories[species[specie],cycle,:],\
+                marker='', color='grey', linewidth=0.6, alpha=0.3)
+
+        axs[species[specie]].plot(average_timestamps, step_average.transpose()[species[specie]],\
+            marker='', color='red', linewidth=1.9, alpha=0.9)
+    plt.show()
+    return
