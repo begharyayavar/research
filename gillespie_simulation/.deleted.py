@@ -60,13 +60,13 @@
 # ============================================
 # Failed attempts at understanding binning.
     # temp_mask = np.repeat(np.reshape(average_timestamps,(1,-1)),NUM_CYCLES,axis=0)
-    # temp2_mask = np.array(temp_mask[:,:]);temp2_mask[:,1:] = temp_mask[:,:-1];temp2_mask[:,0] = temp_mask[:,0];    
-    # mask = (temp_mask>=timestamps)&(temp2_mask<=timestamps) 
-    # 
+    # temp2_mask = np.array(temp_mask[:,:]);temp2_mask[:,1:] = temp_mask[:,:-1];temp2_mask[:,0] = temp_mask[:,0];
+    # mask = (temp_mask>=timestamps)&(temp2_mask<=timestamps)
+    #
     ## what i was trying to do was compare between the current value and the next value
     # what i didn't realise was the values dont have to fall in the next bin
-    
-    # print(temp_mask) 
+
+    # print(temp_mask)
     # print("\n")
     # print(temp2_mask)
     # print("\n")
@@ -85,15 +85,15 @@
     # print(timestamps*mask)
 
     # mask = np.array((timestamps[:, :] <= curr_tmax) & (timestamps[:, 1:] > curr_tmax))
-    
+
     # for specie in species:
-        
+
     #     valid_values = (trajectories[species[specie]] * mask)
     #     valid_values[valid_values == 0] = np.nan
     #     # print(mask)
     #     # print(np.nanmean(valid_values,axis = 0))
     #     species_ave[species[specie]] = np.nanmean(valid_values,axis = 0)
-        
+
     #     del valid_values
         # fill_empty_with_last_value(valid_values,1)
         # print("reference passing test")
@@ -102,7 +102,7 @@
     # print(species_ave)
 
     # Trying to log performance and trying to figure out if can use masking. i had to use binning...
-    
+
     # # Mask to find the steps where T crosses the current tmax for all cycles
     #     print(np.shape(mask))
     #     t_count = np.sum(mask, axis=1)
@@ -250,17 +250,17 @@
 #                                     cycle,\
 #                                     step,\
 #                                     rate_constants[r]) \
-                                    
+
 #                                         for r in range(len(reactions))])
-            
+
 #             R = np.sum(propensities)
-            
+
 #         # Calculate time to next reaction
 #             tau = 1/R * np.log(1/u1_vals[cycle,step])
 
 #         # Store reaction time
 #             timestamps[cycle, step+1] = timestamps[cycle,step] + tau
-        
+
 #         # Select which reaction to occur and update populations
 #             cumulative_propensities_sum = np.cumsum(propensities)
 
@@ -286,11 +286,11 @@
 # # # Vectorized calculation for each species over all time steps
 # # for i in range(1, ave_steps + 1):
 # #     tmax = T_ave[i]
-    
+
 # #     # Mask to find the steps where T crosses the current tmax for all cycles
 # #     mask = (T[:, :-1] <= tmax) & (T[:, 1:] > tmax)
 # #     t_count = np.sum(mask, axis=1)
-    
+
 # #     # If no samples found, just copy the previous values
 # #     if np.all(t_count == 0):
 # #         species_ave[:, i] = species_ave[:, i-1]
@@ -301,7 +301,7 @@
 # #             specie_sums = np.sum(counts[specie_idx, :, :-1] * mask, axis=1)
 # #             species_ave[specie_idx, i] = np.sum(specie_sums) / np.sum(t_count) if np.sum(t_count) != 0 else species_ave[specie_idx, i-1]
 
-    
+
 # # ###### Plot Trajectories ######
 # fig, axs = plt.subplots(3, 1, figsize=(10,20))
 # # # Plot average trajectories
@@ -328,3 +328,70 @@
 #     print(state[cycle,:,0])
 #     print(timestamps[cycle,:])
 # plt.show()
+
+# Trying to use masks to hasten average calculation
+
+# for step in np.arange(1,NUM_STEPS+1,1):
+#         # t1 = perf_counter()
+#         mask = bin_indexes == step
+#         # t2 = perf_counter()
+#         for specie_index in np.arange(specie_indexes.max()+1):
+#             step_sum = np.sum(state[:,:,specie_index][mask])
+#             # t3 = perf_counter()
+#             if bincounts[step - 1] > 0:
+#                 step_average[step] = step_sum / bincounts[step - 1]
+#             else:
+#                 step_average[step] = step_average[step-1]
+#             # t4 = perf_counter()
+#         # np.divide(np.sum(np.where(bin_indexes == step,state,zeros)),bincounts[step-1])
+#             # times.append([t2-t1,t3-t2,t4-t3])
+
+#         progress.update()
+#     # average_times = np.sum(times,axis = 0)/(len(times)*len(species))
+#     # print("Average times")
+#     # print(f"{average_times}")
+
+# From refactoring parser
+        # Parse Species
+        # temp: Set[str] = set()
+        # for line in f:
+        #     temp.update(parse_species(line))
+
+        # species: Dict[str,int] = assign_species_id(temp)
+
+        # if logging:
+        #     print_species(species)
+        # f.seek(0)
+
+# Trying to instantiate a class with instance
+
+    # def __new__(cls,*args,**kwargs):
+    #     if isinstance(args[0],cls):
+    #         return args[0]
+    #     instance = super().__new__(*args,**kwargs)
+    #     instance._name  = SpecieName(args[0])
+    #     instance._key  = generate_key_specie(args[0])
+    #     return instance
+    # def __init__(self,value: str):
+    #     self._name : SpecieName = SpecieName(value)
+    #     self._key : SpecieKey = generate_key_specie(self._name)
+
+    # @property
+    # def name(self) -> SpecieName:
+    #     return self._name
+
+    # @name.setter
+    # def name(self,value):
+    #     self._name = SpecieName(value)
+
+    # @property
+    # def key(self) -> SpecieKey:
+    #     return self._key
+
+# @property
+    # def name(self):
+    #     return self._name
+
+    # @name.setter
+    # def name(self,value: str):
+    #     self._name = SpecieName(value)

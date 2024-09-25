@@ -9,16 +9,16 @@ from numba_progress import ProgressBar
 from tqdm import tqdm
 from typing import List,Dict,Tuple
 from time import perf_counter
-from reaction_parser import reaction_parser
-from utils import convert_str_to_int
-from functions import   calculate_propensity,\
+from common.reaction_parser import reaction_parser
+from common.utils import convert_str_to_int
+from src.base.functions import   calculate_propensity,\
                         min_difference,\
                         transform_state_to_trajectories,\
                         fill_empty_with_last_value
-from benchmarks import benchmark,storage
-from prints import print_status
-from plots import plot_time,plot_trajectories
-from simulation import simulate
+from common.benchmarks import benchmark,storage
+from common.prints import print_status
+from common.plots import plot_time,plot_trajectories
+from numba.simulation import simulate
 # PARAMETERS
 # ==============================
 np.random.seed(123) # fixing seed for repeatability
@@ -37,8 +37,6 @@ initial_specie_counts = reaction_parser(REACTION_FILE)
 # ==============================
 
 
-TIMESTAMPS_DTYPE = np.float32
-STATE_DTYPE = np.uint8
 timestamps = np.zeros((NUM_CYCLES, NUM_STEPS+1),dtype = TIMESTAMPS_DTYPE)
 state = np.zeros((NUM_CYCLES, NUM_STEPS+1,len(species)),dtype = STATE_DTYPE)
 
@@ -66,9 +64,6 @@ species_numba = Dictionary.empty(nb.char,nb.int64)
 for key in species:
     species_numba[convert_str_to_int(key)] = species[key]
 
-@benchmark
-def bin_timestamps(timestamps: np.ndarray,average_timestamps: np.ndarray) -> Tuple[np.ndarray,np.ndarray]:
-    return np.digitize(timestamps,average_timestamps),np.histogram(timestamps,average_timestamps)[0]  # !IMPORTANT should i write my own digitize implementation for sorted arrays...
 
 
 
@@ -77,27 +72,10 @@ bin_indexes,bincounts = bin_timestamps(timestamps,average_timestamps)
 step_averages = step_average = np.zeros((NUM_STEPS + 1))
 with ProgressBar(total = NUM_STEPS) as progress:
     step_averages = state_average_across_cycles(np.array(list(species.values())),state,bin_indexes,bincounts,progress)
-
 print(step_averages)
 
 
-@benchmark
-def calculate_averages(species: Dict[str,int],trajectories: np.ndarray,species_ave: np.ndarray,progress: ProgressBar) -> None:
-    # Initialize the first step
-    for specie in species:
-        species_ave[species[specie], 0] = trajectories[species[specie]][0,0]
 
-    # Binning by timestamps into the correct time interval
-    bin_indexes,_ = bin_timestamps(timestamps,average_timestamps)
-
-    for specie in tqdm(species):
-        for step in tqdm(prange(1,NUM_STEPS+1,1)): # !IMPORTANT unelegant but works. but try to fix?
-            species_ave[species[specie],step] =    np.mean(trajectories[species[specie]][bin_indexes == step]) # Should i use floor divide? what makes sense for smaller values?
-        fill_empty_with_last_value(species_ave[species[specie]]) # !IMPORTANT figure out whether to fill and then take average or vice versa.I think it's better to take the mean and then fill it.
-        progress.update(1)
-
-    # Vectorized calculation for each species over all time steps
-    return
 # with ProgressBar(total=len(species)) as progress:
 #     calculate_averages(species_numba,trajectories,species_ave,progress)
 

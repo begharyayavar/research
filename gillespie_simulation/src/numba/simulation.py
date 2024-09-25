@@ -7,18 +7,8 @@ from numba_progress import ProgressBar
 from common.benchmarks import benchmark,storage
 
 from src.base.functions import calculate_propensity
-class Simulation:
-    def __init__(self: Self):
-        return
 
-    def add_reaction(self: Self):
-        pass
 
-    def run(self: Self):
-        pass
-
-    def config(self: Self):
-        pass
 
 @storage
 @benchmark

@@ -1,7 +1,7 @@
 from typing import Any,Dict,Set,List,Iterable,Callable
-from reactions import ReactionH
-from configuration import *
 import inspect
+
+from configuration import *
 from utils import size_as_string,pad_with_tabs
 
 def print_heading(string: str) -> None:
@@ -14,15 +14,15 @@ def print_species(species: Dict[str,int]) -> None:
     print_heading("Species")
     print(f"{RESET}\n\t{list(species.keys())}{RESET}")
     print_line()
-    
-def print_reactions(reactionsh: List[ReactionH],species: Dict[str,int]) -> None:
+
+def print_reactions(species,reactions) -> None:
     print_heading("Reactions")
     print(f"\n\t{species}\n")
-    for reactionh in reactionsh:
-        print(  f"\t{RESET}{REACTANT_COLOR}{reactionh.reactants}{RESET} ->  " +\
-                    f"{RESET}{PRODUCT_COLOR}{reactionh.products}{RESET} @ " +\
-                        f"{RESET}{COUNT_COLOR} {reactionh.Rf} {RESET}")
-        print(f"{RESET}{TEXT_COLOR}\tCoefficients = {RESET}{reactionh.coefficients}\n")
+    for reaction in reactions:
+        print(  f"\t{RESET}{REACTANT_COLOR}{reaction.reactants}{RESET} ->  " +\
+                    f"{RESET}{PRODUCT_COLOR}{reaction.products}{RESET} @ " +\
+                        f"{RESET}{COUNT_COLOR} {reaction.Rf} {RESET}")
+        print(f"{RESET}{TEXT_COLOR}\tCoefficients = {RESET}{reaction.coefficients}\n")
     print_line()
     pass
 
@@ -33,10 +33,10 @@ def print_initial_conditions(initial_conditions: Dict[int,int],species: Dict[str
     for specie in temp:
         print(f"{RESET}{PRODUCT_COLOR}\t{pad_with_tabs(specie)}{RESET}:\t {RESET}{COUNT_COLOR} {temp[specie]} {RESET}")
     print_line()
-    
+
 def print_status(string: str) -> None:
     print(f"{RESET}{STATUS_COLOR}{BOLD}\n\n\t{string}\n{RESET}")
-    
+
 def print_benchmark(func: Callable,time_taken: float,*args: Any,**kwargs: Any) -> None:
     print_status("Benchmark")
     print(f"\n\t{RESET}{TEXT_COLOR}Time taken for : {RESET}{PRODUCT_COLOR}{func.__name__}{RESET}")
