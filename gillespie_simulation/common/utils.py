@@ -1,8 +1,7 @@
 from typing import List,Generator
-from configuration import REACTION_DELIMITERS,INITIAL_CONDITION_DELIMITERS,DEFAULT_TAB_WIDTH,DEFAULT_COL_WIDTH
+from configuration import REACTION_DELIMITERS,INITIAL_CONDITION_DELIMITERS,DEFAULT_TAB_WIDTH,DEFAULT_COL_WIDTH,ALPHABET,NUMBERS
 
-ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSSTUVWXYZ"
-NUMBERS = "0123456789"
+
 
 def prep_line(string: str)-> str:
     return remove_whitespace(string).split(";")[0]
@@ -18,14 +17,15 @@ def split_multiple(string: str, delimiters: List["str"]) -> List[str]:
 def is_string_number(string: str) -> bool:
     return all([character in NUMBERS for character in string])
 
-def is_substring_specie(string: str) -> bool:
-    return all([character in ALPHABET+NUMBERS for character in string])\
-            and string[0] in ALPHABET
+
 
 def convert_str_to_int(string: str) -> int:
     return int("".join([str(ord(char)) for char in string]))
 
+
 def is_string_reaction(string: str) -> bool:
+    base: str = string.replace(" ","").split(";")[0]
+    return any([char in base for char in REACTION_DELIMITERS])
     base: str = string.replace(" ","").split(";")[0]
     return any([char in base for char in REACTION_DELIMITERS])
 
@@ -50,7 +50,19 @@ def size_as_string(num, suffix="B"):
 #         yield index
 
 
+# MAX_NUM_REACTIONS = 100
+# def reaction_index_generator() -> Generator[int]:
+#     for index in range(MAX_NUM_REACTIONS):
+#         yield index
+
+# MAX_NUM_SPECIES = 500
+# def specie_index_generator() -> Generator[int]:
+#     for index in range(MAX_NUM_SPECIES):
+#         yield index
+
+
 def pad_with_tabs(string: str,width = DEFAULT_COL_WIDTH) -> str:
     num_tabs = (width-len(string))//DEFAULT_TAB_WIDTH + (1 if (len(string)% DEFAULT_TAB_WIDTH) >= 1 else 0)
     tabs = "\t"*num_tabs
     return f"{string}{tabs}"
+

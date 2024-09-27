@@ -1,12 +1,11 @@
 from typing import Self
 
-from common.configuration import DEFAULT_CYCLES,DEFAULT_STEPS
-
 from reaction_parser import parser
 from utils import is_file
 class Simulation:
 
     def __init__(self: Self):
+        self._simvars : SimulationVariables
         return
 
     def add_reactions_from_file(self,filepath: str):
